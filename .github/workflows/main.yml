@@ -12,12 +12,17 @@ jobs:
       - name: Baixar o código do repositório
         uses: actions/checkout@v4
 
-      # Correção: Passamos a secret para uma variável de ambiente (env) para o sed não bugar
+      # Usando Node.js para substituir o texto com total segurança contra caracteres especiais e barras
       - name: Injetar URL Secreta no index.html
         env:
           MINHA_API_URL: ${{ secrets.URL_MINHA_API }}
         run: |
-          sed -i "s|REPLACE_WITH_API_URL|$MINHA_API_URL|g" index.html
+          node -e "
+            const fs = require('fs');
+            let content = fs.readFileSync('index.html', 'utf8');
+            content = content.replace(/REPLACE_WITH_API_URL/g, process.env.MINHA_API_URL);
+            fs.writeFileSync('index.html', content, 'utf8');
+          "
 
       - name: Enviar para o GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
