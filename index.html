@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="min-h-screen">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Projeto Leite para Primeira Infância</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { 
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    borderRadius: { 'portal': '1.25rem' }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen m-0 p-0 bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300 font-sans antialiased flex flex-col justify-start">
+    
+    <section class="w-full flex flex-col flex-1">
+        
+        <div id="tela-registro" class="flex flex-col w-full">
+            <header class="sticky top-0 z-50 border-b border-gray-200/60 dark:border-gray-800/60 py-3.5 px-4 flex justify-between items-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-md">
+                <h5 class="text-base font-bold tracking-tight text-gray-800 dark:text-gray-200">Acompanhamento</h5>
+                <div class="flex items-center gap-2">
+                    <button onclick="alternarTela('upload')" class="flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-400 transition-all active:scale-95">
+                        Upload
+                    </button>
+                    <button onclick="document.documentElement.classList.toggle('dark')" class="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-xs">🌓</button>
+                </div>
+            </header>
+
+            <div class="w-full px-4 py-6 overflow-y-auto">
+                <div class="max-w-xl mx-auto space-y-4 h-fit">
+                    <div id="feedback-registro" class="min-h-[50px] empty:hidden"></div>
+
+                    <form id="form-registro" onsubmit="event.preventDefault(); enviarRegistro(this);" class="bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800/60 rounded-portal p-5 shadow-xl shadow-gray-200/5 dark:shadow-none">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="col-span-12 sm:col-span-4">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-500">CPF</label>
+                                <input type="text" name="cpf" inputmode="numeric" onblur="procurarCPF(this.value)" class="w-full p-3 border rounded-xl bg-gray-50/50 dark:bg-gray-950/50 border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold" required>
+                            </div>
+                            <div class="col-span-12 sm:col-span-8">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-500">Nome Completo</label>
+                                <input type="text" name="nome" class="w-full p-3 border rounded-xl bg-gray-50/50 dark:bg-gray-950/50 border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold" required>
+                            </div>
+                            <div class="col-span-12 sm:col-span-6">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-500">Quantidade</label>
+                                <input type="number" name="quantidade" min="1" value="3" class="w-full p-3 border rounded-xl bg-gray-50/50 dark:bg-gray-950/50 border-gray-200 dark:border-gray-800 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none" required>
+                            </div>
+                            <div class="col-span-12 sm:col-span-6">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-500">Data</label>
+                                <input type="date" id="dataEntrega" name="data" class="w-full p-3 border rounded-xl bg-gray-50/50 dark:bg-gray-950/50 border-gray-200 dark:border-gray-800 text-sm font-semibold text-gray-500 outline-none read-only:opacity-75 focus:ring-2 focus:ring-blue-500" required readonly>
+                                <div class="flex items-center mt-2 bg-gray-50 dark:bg-gray-950/30 p-2 rounded-lg border border-gray-100 dark:border-gray-800/40">
+                                    <input type="checkbox" id="editarData" onchange="alternarEdicaoData(this, 'dataEntrega')" class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <label for="editarData" class="ml-2 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide cursor-pointer select-none">Usar outra data</label>
+                                </div>
+                             </div>
+                            <div class="col-span-12">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-500">Unidade CRAS</label>
+                                <select name="unidade" id="Unidade" class="w-full p-3 border rounded-xl bg-gray-50/50 dark:bg-gray-950/50 border-gray-200 dark:border-gray-800 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none" required>
+                                    <option value="" selected disabled>Selecione a unidade...</option>
+                                    <option value="CRAS Santos Reis">CRAS Santos Reis</option>
+                                    <option value="CRAS Renascença">CRAS Renascença</option>
+                                    <option value="CRAS Vila Oliveira">CRAS Vila Oliveira</option>
+                                    <option value="CRAS Major Prates">CRAS Major Prates</option>
+                                    <option value="CRAS Maracanã">CRAS Maracanã</option>
+                                    <option value="CRAS São Judas">CRAS São Judas</option>
+                                    <option value="CRAS Central">CRAS Central</option>
+                                    <option value="CRAS JK/Village">CRAS JK/Village</option>
+                                    <option value="CRAS Independência">CRAS Independência</option>
+                                    <option value="CRAS Rural (mercado central)">CRAS Rural</option>
+                                    <option value="CRAS Delfino">CRAS Delfino</option>
+                                </select>
+                                <div class="flex items-center mt-2 bg-gray-50 dark:bg-gray-950/30 p-2 rounded-lg border border-gray-100 dark:border-gray-800/40">
+                                    <input type="checkbox" id="editarUnidade" class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <label for="editarUnidade" class="ml-2 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide cursor-pointer select-none">Salvar CRAS por padrão nesta sessão</label>
+                                </div>
+                            </div>
+                            <div class="col-span-6">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-600">UF</label>
+                                <input type="text" name="uf" value="MG" readonly class="w-full p-3 border rounded-xl bg-gray-100 dark:bg-gray-950 border-gray-200 dark:border-gray-800 text-sm text-gray-400 dark:text-gray-600 font-semibold select-none">
+                            </div>
+                            <div class="col-span-6">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-600">Cidade</label>
+                                <input type="text" name="cidade" value="Montes Claros" readonly class="w-full p-3 border rounded-xl bg-gray-100 dark:bg-gray-950 border-gray-200 dark:border-gray-800 text-sm text-gray-400 dark:text-gray-600 font-semibold select-none">
+                            </div>
+                            <div class="col-span-12 pt-2">
+                                <button type="submit" id="btnSubmitRegistro" class="w-full py-3.5 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 transition-all active:scale-95 shadow-md shadow-blue-500/10 uppercase tracking-wider">
+                                    Salvar Registro
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="tela-upload" class="flex flex-col w-full hidden">
+            <header class="sticky top-0 z-50 border-b border-gray-200/60 dark:border-gray-800/60 py-3.5 px-4 flex justify-between items-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-md">
+                <div class="flex items-center gap-2">
+                    <button onclick="alternarTela('registro')" class="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition-all">
+                        ← Voltar
+                    </button>
+                    <h5 class="text-base font-bold tracking-tight text-gray-800 dark:text-gray-200">Upload de Listas</h5>
+                </div>
+                <button onclick="document.documentElement.classList.toggle('dark')" class="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-xs">🌓</button>
+            </header>
+
+            <div class="w-full px-4 py-6 overflow-y-auto">
+                <div class="max-w-xl mx-auto space-y-4 h-fit">
+                    <div id="feedback-upload" class="min-h-[50px] empty:hidden"></div>
+
+                    <form id="form-upload" onsubmit="event.preventDefault(); enviarArquivo(this);" class="bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800/60 rounded-portal p-5 shadow-xl shadow-gray-200/5 dark:shadow-none">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="col-span-12 sm:col-span-6">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-500">Data de Referência</label>
+                                <input type="date" id="dataUpload" name="data" class="w-full p-3 border rounded-xl bg-gray-50/50 dark:bg-gray-950/50 border-gray-200 dark:border-gray-800 text-sm font-semibold text-gray-500 outline-none read-only:opacity-75 focus:ring-2 focus:ring-blue-500" required readonly>
+                                <div class="flex items-center mt-2 bg-gray-50 dark:bg-gray-950/30 p-2 rounded-lg border border-gray-100 dark:border-gray-800/40">
+                                    <input type="checkbox" id="editarDataUpload" onchange="alternarEdicaoData(this, 'dataUpload')" class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <label for="editarDataUpload" class="ml-2 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide cursor-pointer select-none">Usar outra data</label>
+                                </div>
+                            </div>
+                            <div class="col-span-12 sm:col-span-6">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-500">Unidade CRAS correspondente</label>
+                                <select name="unidade" id="UnidadeUpload" class="w-full p-3 border rounded-xl bg-gray-50/50 dark:bg-gray-950/50 border-gray-200 dark:border-gray-800 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none" required>
+                                    <option value="" selected disabled>Selecione a unidade...</option>
+                                    <option value="CRAS Santos Reis">CRAS Santos Reis</option>
+                                    <option value="CRAS Renascença">CRAS Renascença</option>
+                                    <option value="CRAS Vila Oliveira">CRAS Vila Oliveira</option>
+                                    <option value="CRAS Major Prates">CRAS Major Prates</option>
+                                    <option value="CRAS Maracanã">CRAS Maracanã</option>
+                                    <option value="CRAS São Judas">CRAS São Judas</option>
+                                    <option value="CRAS Central">CRAS Central</option>
+                                    <option value="CRAS JK/Village">CRAS JK/Village</option>
+                                    <option value="CRAS Independência">CRAS Independência</option>
+                                    <option value="CRAS Rural (mercado central)">CRAS Rural</option>
+                                    <option value="CRAS Delfino">CRAS Delfino</option>
+                                </select>
+                            </div>
+                            <div class="col-span-12">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 dark:text-gray-500">Arquivo da Lista (PDF ou Imagem)</label>
+                                <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-6 bg-gray-50 dark:bg-gray-950/40 text-center hover:bg-blue-50/30 dark:hover:bg-blue-950/10 hover:border-blue-500 dark:hover:border-blue-400 transition-colors group">
+                                    <input type="file" name="meuArquivo" accept="image/*,application/pdf" capture="environment" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required onchange="atualizarNomeArquivo(this)">
+                                    <div class="space-y-1 text-center pointer-events-none">
+                                        <span id="texto-arquivo-status" class="text-sm text-gray-700 dark:text-gray-300 block font-bold transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                            📸 Toque para Tirar Foto ou Escolher PDF
+                                        </span>
+                                        <span class="text-[10px] text-gray-400 dark:text-gray-500 block">Formatos aceitos: Imagens e PDF</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-span-12 pt-2">
+                                <button type="submit" id="btnSubmitUpload" class="w-full py-3.5 rounded-xl text-sm font-bold bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 transition-all active:scale-95 shadow-md shadow-green-500/10 uppercase tracking-wider">
+                                    Enviar Lista Oficial
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+<script>
+  // COLOQUE AQUI A URL DO SEU GOOGLE APPS SCRIPT PUBLICADO (Termina com /exec)
+  const URL_API = "https://script.google.com/macros/s/AKfycbwyTx6LFcUOZCwQsznEEdJXsyELTD0Lu_OaI78JubwX1arY5C6RZ32iK4zmsyxu6u_M/exec";
+
+  function alternarTela(tela) {
+    if (tela === 'upload') {
+      document.getElementById('tela-registro').classList.add('hidden');
+      document.getElementById('tela-upload').classList.remove('hidden');
+      const unidadePrincipal = document.getElementById('Unidade').value;
+      if (unidadePrincipal) {
+        document.getElementById('UnidadeUpload').value = unidadePrincipal;
+      }
+    } else {
+      document.getElementById('tela-upload').classList.add('hidden');
+      document.getElementById('tela-registro').classList.remove('hidden');
+    }
+  }
+
+  function configurarDataHoje() {
+    const hoje = new Date().toISOString().split('T')[0];
+    document.getElementById("dataEntrega").value = hoje;
+    document.getElementById("dataUpload").value = hoje;
+    const campoCPF = document.getElementsByName("cpf")[0];
+    if (campoCPF && !document.getElementById('tela-registro').classList.contains('hidden')) {
+      campoCPF.focus();
+    }
+  }
+
+  window.onload = function() {
+    configurarDataHoje();
+  };
+
+  function alternarEdicaoData(checkbox, idCampo) {
+    const campoData = document.getElementById(idCampo);
+    campoData.readOnly = !checkbox.checked;
+    if (!checkbox.checked) {
+      configurarDataHoje();
+    }
+  }
+
+  function atualizarNomeArquivo(input) {
+    const texto = document.getElementById('texto-arquivo-status');
+    if (input.files && input.files.length > 0) {
+      texto.innerText = "✅ Arquivo pronto: " + input.files[0].name;
+      texto.classList.remove('text-gray-700', 'dark:text-gray-300');
+      texto.classList.add('text-green-600', 'dark:text-green-400');
+    } else {
+      texto.innerText = "📸 Toque para Tirar Foto ou Escolher PDF";
+      texto.classList.remove('text-green-600', 'dark:text-green-400');
+    }
+  }
+
+  function mostrarMensagem(texto, tipo, local) {
+    const container = document.getElementById(local === 'upload' ? "feedback-upload" : "feedback-registro");
+    const cores = {
+      success: "bg-green-50 text-green-800 border-green-200 dark:bg-green-950/80 dark:text-green-400 dark:border-green-900/50",
+      danger: "bg-red-50 text-red-800 border-red-200 dark:bg-red-950/80 dark:text-red-400 dark:border-red-900/50",
+      secondary: "bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/80 dark:text-blue-400 dark:border-blue-900/50"
+    };
+    container.innerHTML = `<div class="p-4 rounded-xl border ${cores[tipo] || cores.secondary} font-semibold text-sm shadow-sm transition-all">${texto}</div>`;
+    setTimeout(() => { container.innerHTML = ""; }, 5000);
+  }
+
+  // NOVA FUNÇÃO: Busca CPF via API HTTP
+  function procurarCPF(cpf) {
+    if (!cpf) return;
+    
+    fetch(`${URL_API}?acao=buscarCPF&cpf=${cpf}`)
+      .then(response => response.json())
+      .then(resultado => {
+        if (resultado) {
+          mostrarMensagem("CPF encontrado!", "success", "registro");
+          document.getElementsByName("nome")[0].value = resultado.nome;
+          document.getElementsByName("unidade")[0].value = resultado.unidade.trim();
+        } else {
+          mostrarMensagem("Novo CPF, complete o cadastro.", "secondary", "registro");
+        }
+      })
+      .catch(erro => console.error("Erro ao buscar CPF:", erro));
+  }
+
+  // NOVA FUNÇÃO: Envia o Registro via POST JSON
+  function enviarRegistro(formulario) {
+    const botao = document.getElementById("btnSubmitRegistro");
+    const formData = new FormData(formulario);
+    
+    // Converte dados do formulário para objeto JSON simples
+    const payload = {
+      acao: "inserir",
+      formulario: Object.fromEntries(formData.entries())
+    };
+
+    botao.disabled = true;
+    botao.innerHTML = `Enviando...`;
+
+    fetch(URL_API, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(resposta => {
+      if(resposta.sucesso) {
+        mostrarMensagem(resposta.mensagem, "success", "registro");
+        formulario.reset();
+        configurarDataHoje();
+      } else {
+        mostrarMensagem(resposta.mensagem, "danger", "registro");
+      }
+    })
+    .catch(erro => mostrarMensagem("Erro de conexão: " + erro, "danger", "registro"))
+    .finally(() => {
+      botao.disabled = false;
+      botao.innerHTML = "Salvar Registro";
+    });
+  }
+
+  // NOVA FUNÇÃO: Envia o arquivo convertido em Base64
+  function enviarArquivo(formulario) {
+    const botao = document.getElementById("btnSubmitUpload");
+    const fileInput = formulario.querySelector('input[type="file"]');
+    
+    if (!fileInput.files.length) return;
+    
+    botao.disabled = true;
+    botao.innerHTML = "Enviando arquivo...";
+
+    const arquivo = fileInput.files[0];
+    const leitor = new FileReader();
+    
+    leitor.onload = function(e) {
+      const base64Data = e.target.result.split(',')[1];
+      const payload = {
+        acao: "upload",
+        arquivo: {
+          bytes: base64Data,
+          nome: arquivo.name,
+          mimeType: arquivo.type,
+          data: document.getElementById("dataUpload").value,
+          unidade: document.getElementById("UnidadeUpload").value
+        }
+      };
+
+      fetch(URL_API, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(resposta => {
+        mostrarMensagem(resposta.mensagem, resposta.sucesso ? "success" : "danger", "upload");
+        if(resposta.sucesso) {
+          formulario.reset();
+          document.getElementById('texto-arquivo-status').innerText = "📸 Toque para Tirar Foto ou Escolher PDF";
+          configurarDataHoje();
+        }
+      })
+      .catch(erro => mostrarMensagem("Erro ao subir arquivo: " + erro, "danger", "upload"))
+      .finally(() => {
+        botao.disabled = false;
+        botao.innerHTML = "Enviar Lista Oficial";
+      });
+    };
+    
+    leitor.readAsDataURL(arquivo);
+  }
+</script>
+</body>
+</html>
