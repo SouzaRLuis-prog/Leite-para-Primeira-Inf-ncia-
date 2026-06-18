@@ -1,0 +1,23 @@
+name: Deploy Seguro para GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Roda sempre que você salvar algo na branch principal
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Injetar URL Secreta no index.html
+        run: |
+          sed -i 's|REPLACE_WITH_API_URL|${{ secrets.URL_MINHA_API }}|g' index.html
+
+      - name: Enviar para o GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: . # Sobe a pasta atual modificada com a URL certa
+          branch: gh-pages # Cria uma ramificação separada só com o site final
