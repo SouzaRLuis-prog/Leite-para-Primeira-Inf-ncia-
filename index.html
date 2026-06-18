@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Projeto Leite para Primeira Infância</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { 
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    borderRadius: { 'portal': '1.25rem' }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animação suave para sumir com a splash screen */
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease-out;
+        }
+    </style>
+</head>
+<body class="h-full m-0 p-0 bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300 font-sans antialiased overflow-hidden">
+
+    <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 text-white transition-opacity duration-500">
+        <div class="flex flex-col items-center space-y-4 animate-bounce">
+            <div class="p-4 bg-white/10 rounded-full backdrop-blur-md">
+                <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 18c-4.97 0-9-4.03-9-9s4.03-9 9-9c4.97 0 9 4.03 9 9s-4.03 9-9 9z"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-black tracking-wider uppercase text-center px-4">
+                Nome Projeto<br><span class="text-xs font-medium text-blue-200 tracking-widest block mt-1">Descrição</span>
+            </h1>
+        </div>
+        <div class="absolute bottom-10 w-24 h-1 bg-blue-400/30 rounded-full overflow-hidden">
+            <div class="w-1/2 h-full bg-white rounded-full animate-[ping_1.5s_infinite]"></div>
+        </div>
+    </div>
+
+    <main class="w-full h-full grid grid-cols-1 lg:grid-cols-12 overflow-hidden opacity-0 transition-opacity duration-500" id="conteudo-principal">
+        
+        <section class="lg:col-span-7 flex flex-col h-full overflow-y-auto">
+            
+            <header class="sticky top-0 z-50 border-b border-gray-200/60 dark:border-gray-800/60 py-4 px-6 flex justify-between items-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
+                <div>
+                    <h5 class="text-lg font-bold tracking-tight text-gray-800 dark:text-gray-200" id="titulo-pagina">Acompanhamento</h5>
+                    <p class="text-xs text-gray-400 hidden lg:block">Registro de entregas</p>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button id="btn-alternar-tela" onclick="alternarTelaLayout()" class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-400 transition-all active:scale-95">
+                        Upload de Lista
+                    </button>
+                    <button onclick="document.documentElement.classList.toggle('dark')" class="p-2.5 rounded-full bg-gray-100 dark:bg-gray-800 text-sm">🌓</button>
+                </div>
+            </header>
+
+            <div class="flex-1 px-4 py-8 sm:px-8 max-w-2xl mx-auto w-full space-y-6">
+                
+                <div id="feedback-geral" class="min-h-[50px] empty:hidden"></div>
+
+                <form id="form-registro" onsubmit="event.preventDefault(); enviarRegistro(this);" class="space-y-5">
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-12 sm:col-span-4">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-500">CPF</label>
+                            <input type="text" name="cpf" inputmode="numeric" onblur="procurarCPF(this.value)" class="w-full p-3.5 border rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold shadow-sm" required>
+                        </div>
+                        <div class="col-span-12 sm:col-span-8">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-500">Nome Completo</label>
+                            <input type="text" name="nome" class="w-full p-3.5 border rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold shadow-sm" required>
+                        </div>
+                        <div class="col-span-12 sm:col-span-6">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-500">Quantidade</label>
+                            <input type="number" name="quantidade" min="1" value="3" class="w-full p-3.5 border rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none shadow-sm" required>
+                        </div>
+                        <div class="col-span-12 sm:col-span-6">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-500">Data</label>
+                            <input type="date" id="dataEntrega" name="data" class="w-full p-3.5 border rounded-xl bg-gray-100 dark:bg-gray-950 border-gray-200 dark:border-gray-800 text-sm font-semibold text-gray-500 outline-none read-only:opacity-75 focus:ring-2 focus:ring-blue-500" required readonly>
+                            <div class="flex items-center mt-2 bg-gray-200/30 dark:bg-gray-800/30 p-2 rounded-lg border border-gray-200/40 dark:border-gray-800/40">
+                                <input type="checkbox" id="editarData" onchange="alternarEdicaoData(this, 'dataEntrega')" class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <label for="editarData" class="ml-2 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide cursor-pointer select-none">Usar outra data</label>
+                            </div>
+                         </div>
+                        <div class="col-span-12">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-500">Unidade CRAS</label>
+                            <select name="unidade" id="Unidade" class="w-full p-3.5 border rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none shadow-sm" required>
+                                <option value="" selected disabled>Selecione a unidade...</option>
+                                <option value="CRAS Santos Reis">CRAS Santos Reis</option>
+                                <option value="CRAS Renascença">CRAS Renascença</option>
+                                <option value="CRAS Vila Oliveira">CRAS Vila Oliveira</option>
+                                <option value="CRAS Major Prates">CRAS Major Prates</option>
+                                <option value="CRAS Maracanã">CRAS Maracanã</option>
+                                <option value="CRAS São Judas">CRAS São Judas</option>
+                                <option value="CRAS Central">CRAS Central</option>
+                                <option value="CRAS JK/Village">CRAS JK/Village</option>
+                                <option value="CRAS Independência">CRAS Independência</option>
+                                <option value="CRAS Rural (mercado central)">CRAS Rural</option>
+                                <option value="CRAS Delfino">CRAS Delfino</option>
+                            </select>
+                            <div class="flex items-center mt-2 bg-gray-200/30 dark:bg-gray-800/30 p-2 rounded-lg border border-gray-200/40 dark:border-gray-800/40">
+                                <input type="checkbox" id="editarUnidade" class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <label for="editarUnidade" class="ml-2 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide cursor-pointer select-none">Salvar CRAS por padrão nesta sessão</label>
+                            </div>
+                        </div>
+                        <div class="col-span-6">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-600">UF</label>
+                            <input type="text" name="uf" value="MG" readonly class="w-full p-3.5 border rounded-xl bg-gray-100 dark:bg-gray-950 border-gray-200 dark:border-gray-800 text-sm text-gray-400 dark:text-gray-600 font-semibold select-none">
+                        </div>
+                        <div class="col-span-6">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-600">Cidade</label>
+                            <input type="text" name="cidade" value="Montes Claros" readonly class="w-full p-3.5 border rounded-xl bg-gray-100 dark:bg-gray-950 border-gray-200 dark:border-gray-800 text-sm text-gray-400 dark:text-gray-600 font-semibold select-none">
+                        </div>
+                        <div class="col-span-12 pt-4">
+                            <button type="submit" id="btnSubmitRegistro" class="w-full py-4 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 transition-all active:scale-95 shadow-md shadow-blue-500/10 uppercase tracking-wider">
+                                Salvar Registro
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <form id="form-upload" onsubmit="event.preventDefault(); enviarArquivo(this);" class="space-y-5 hidden">
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-12 sm:col-span-6">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-500">Data de Referência</label>
+                            <input type="date" id="dataUpload" name="data" class="w-full p-3.5 border rounded-xl bg-gray-100 dark:bg-gray-950 border-gray-200 dark:border-gray-800 text-sm font-semibold text-gray-500 outline-none read-only:opacity-75 focus:ring-2 focus:ring-blue-500" required readonly>
+                            <div class="flex items-center mt-2 bg-gray-200/30 dark:bg-gray-800/30 p-2 rounded-lg border border-gray-200/40 dark:border-gray-800/40">
+                                <input type="checkbox" id="editarDataUpload" onchange="alternarEdicaoData(this, 'dataUpload')" class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <label for="editarDataUpload" class="ml-2 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide cursor-pointer select-none">Usar outra data</label>
+                            </div>
+                        </div>
+                        <div class="col-span-12 sm:col-span-6">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-500">Unidade CRAS correspondente</label>
+                            <select name="unidade" id="UnidadeUpload" class="w-full p-3.5 border rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none shadow-sm" required>
+                                <option value="" selected disabled>Selecione a unidade...</option>
+                                <option value="CRAS Santos Reis">CRAS Santos Reis</option>
+                                <option value="CRAS Renascença">CRAS Renascença</option>
+                                <option value="CRAS Vila Oliveira">CRAS Vila Oliveira</option>
+                                <option value="CRAS Major Prates">CRAS Major Prates</option>
+                                <option value="CRAS Maracanã">CRAS Maracanã</option>
+                                <option value="CRAS São Judas">CRAS São Judas</option>
+                                <option value="CRAS Central">CRAS Central</option>
+                                <option value="CRAS JK/Village">CRAS JK/Village</option>
+                                <option value="CRAS Independência">CRAS Independência</option>
+                                <option value="CRAS Rural (mercado central)">CRAS Rural</option>
+                                <option value="CRAS Delfino">CRAS Delfino</option>
+                            </select>
+                        </div>
+                        <div class="col-span-12">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5 text-gray-400 dark:text-gray-500">Arquivo da Lista (PDF ou Imagem)</label>
+                            <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 bg-white dark:bg-gray-900 text-center hover:bg-blue-50/30 dark:hover:bg-blue-950/10 hover:border-blue-500 dark:hover:border-blue-400 transition-colors group shadow-sm">
+                                <input type="file" name="meuArquivo" accept="image/*,application/pdf" capture="environment" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required onchange="atualizarNomeArquivo(this)">
+                                <div class="space-y-1 text-center pointer-events-none">
+                                    <span id="texto-arquivo-status" class="text-sm text-gray-700 dark:text-gray-300 block font-bold transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                        📸 Toque para Tirar Foto ou Escolher PDF
+                                    </span>
+                                    <span class="text-[10px] text-gray-400 dark:text-gray-500 block">Formatos aceitos: Imagens e PDF</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-12 pt-4">
+                            <button type="submit" id="btnSubmitUpload" class="w-full py-4 rounded-xl text-sm font-bold bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 transition-all active:scale-95 shadow-md shadow-green-500/10 uppercase tracking-wider">
+                                Enviar Lista Oficial
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="order-first lg:order-last lg:col-span-5 relative h-48 lg:h-full w-full bg-blue-900 overflow-hidden flex items-center justify-center">
+            <img src="https://placehold.co/600x1200" 
+                 alt="Layout" 
+                 class="absolute inset-0 w-full h-full object-cover opacity-60 lg:opacity-50">
+            
+            <div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-blue-950 via-blue-950/40 to-transparent"></div>
+            
+            <div class="relative z-10 hidden lg:block text-white p-12 max-w-md">
+                <span class="px-3 py-1 bg-blue-500/30 text-blue-300 text-[10px] font-bold uppercase tracking-widest rounded-full backdrop-blur-sm">
+                    Tipo Projeto
+                </span>
+                <h2 class="text-3xl font-black tracking-tight mt-4 mb-2">Nome Projeto</h2>
+                <p class="text-sm text-blue-200/90 leading-relaxed">
+                    Slogan
+                </p>
+            </div>
+
+            <div class="relative z-10 lg:hidden text-center text-white">
+                <h2 class="text-xl font-black uppercase tracking-wider">Nome Projeto</h2>
+                <p class="text-[10px] text-blue-200 uppercase tracking-widest">Cidade</p>
+            </div>
+        </section>
+
+    </main>
+
+<script>
+  // COLOQUE AQUI A URL DO SEU GOOGLE APPS SCRIPT PUBLICADO (Termina com /exec)
+  const URL_API = "https://script.google.com/macros/s/SEU_ID_AQUI/exec";
+
+  // Lógica do temporizador da Splash Screen
+  window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+          const splash = document.getElementById('splash-screen');
+          const principal = document.getElementById('conteudo-principal');
+          
+          splash.classList.add('fade-out');
+          principal.classList.remove('opacity-0');
+          
+          configurarDataHoje();
+          
+          // Remove a div da árvore após a animação de fade acabar
+          setTimeout(() => splash.remove(), 600);
+      }, 2500); // 2.5 segundos de exibição da Splash Screen
+  });
+
+  // Alternador de telas adaptado para o novo layout sem cards soltos
+  function alternarTelaLayout() {
+    const formReg = document.getElementById('form-registro');
+    const formUp = document.getElementById('form-upload');
+    const btn = document.getElementById('btn-alternar-tela');
+    const titulo = document.getElementById('titulo-pagina');
+
+    if (formReg.classList.contains('hidden')) {
+        formReg.classList.remove('hidden');
+        formUp.classList.add('hidden');
+        btn.innerText = "Upload de Lista";
+        btn.classList.replace('bg-green-50', 'bg-blue-50');
+        btn.classList.replace('text-green-600', 'text-blue-600');
+        titulo.innerText = "Acompanhamento";
+    } else {
+        formReg.classList.add('hidden');
+        formUp.classList.remove('hidden');
+        btn.innerText = "← Voltar pro Registro";
+        btn.classList.replace('bg-blue-50', 'bg-green-50');
+        btn.classList.replace('text-blue-600', 'text-green-600');
+        titulo.innerText = "Upload de Listas";
+        
+        const unidadePrincipal = document.getElementById('Unidade').value;
+        if (unidadePrincipal) {
+            document.getElementById('UnidadeUpload').value = unidadePrincipal;
+        }
+    }
+  }
+
+  function configurarDataHoje() {
+    const hoje = new Date().toISOString().split('T')[0];
+    document.getElementById("dataEntrega").value = hoje;
+    document.getElementById("dataUpload").value = hoje;
+  }
+
+  function alternarEdicaoData(checkbox, idCampo) {
+    const campoData = document.getElementById(idCampo);
+    campoData.readOnly = !checkbox.checked;
+    if (!checkbox.checked) {
+      configurarDataHoje();
+    }
+  }
+
+  function atualizarNomeArquivo(input) {
+    const texto = document.getElementById('texto-arquivo-status');
+    if (input.files && input.files.length > 0) {
+      texto.innerText = "✅ Arquivo pronto: " + input.files[0].name;
+      texto.classList.add('text-green-600', 'dark:text-green-400');
+    } else {
+      texto.innerText = "📸 Toque para Tirar Foto ou Escolher PDF";
+      texto.classList.remove('text-green-600', 'dark:text-green-400');
+    }
+  }
+
+  function mostrarMensagem(texto, tipo) {
+    const container = document.getElementById("feedback-geral");
+    const cores = {
+      success: "bg-green-50 text-green-800 border-green-200 dark:bg-green-950/50 dark:text-green-400 dark:border-green-900/50",
+      danger: "bg-red-50 text-red-800 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-900/50",
+      secondary: "bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900/50"
+    };
+    container.innerHTML = `<div class="p-4 rounded-xl border ${cores[tipo] || cores.secondary} font-semibold text-sm shadow-sm transition-all animate-pulse">${texto}</div>`;
+    setTimeout(() => { container.innerHTML = ""; }, 5000);
+  }
+
+  function procurarCPF(cpf) {
+    if (!cpf) return;
+    fetch(`${URL_API}?acao=buscarCPF&cpf=${cpf}`)
+      .then(response => response.json())
+      .then(resultado => {
+        if (resultado) {
+          mostrarMensagem("CPF encontrado com sucesso!", "success");
+          document.getElementsByName("nome")[0].value = resultado.nome;
+          document.getElementsByName("unidade")[0].value = resultado.unidade.trim();
+        } else {
+          mostrarMensagem("Novo CPF detectado, preencha o restante do cadastro.", "secondary");
+        }
+      })
+      .catch(erro => console.error("Erro ao buscar CPF:", erro));
+  }
+
+  function enviarRegistro(formulario) {
+    const botao = document.getElementById("btnSubmitRegistro");
+    const formData = new FormData(formulario);
+    const payload = {
+      acao: "inserir",
+      formulario: Object.fromEntries(formData.entries())
+    };
+
+    botao.disabled = true;
+    botao.innerHTML = `Salvando no Banco...`;
+
+    fetch(URL_API, { method: "POST", body: JSON.stringify(payload) })
+    .then(res => res.json())
+    .then(resposta => {
+      if(resposta.sucesso) {
+        mostrarMensagem(resposta.mensagem, "success");
+        formulario.reset();
+        configurarDataHoje();
+      } else {
+        mostrarMensagem(resposta.mensagem, "danger");
+      }
+    })
+    .catch(erro => mostrarMensagem("Erro na conexão: " + erro, "danger"))
+    .finally(() => {
+      botao.disabled = false;
+      botao.innerHTML = "Salvar Registro";
+    });
+  }
+
+  function enviarArquivo(formulario) {
+    const botao = document.getElementById("btnSubmitUpload");
+    const fileInput = formulario.querySelector('input[type="file"]');
+    if (!fileInput.files.length) return;
+    
+    botao.disabled = true;
+    botao.innerHTML = "Subindo documento...";
+
+    const arquivo = fileInput.files[0];
+    const leitor = new FileReader();
+    
+    leitor.onload = function(e) {
+      const base64Data = e.target.result.split(',')[1];
+      const payload = {
+        acao: "upload",
+        arquivo: {
+          bytes: base64Data,
+          nome: arquivo.name,
+          mimeType: arquivo.type,
+          data: document.getElementById("dataUpload").value,
+          unidade: document.getElementById("UnidadeUpload").value
+        }
+      };
+
+      fetch(URL_API, { method: "POST", body: JSON.stringify(payload) })
+      .then(res => res.json())
+      .then(resposta => {
+        mostrarMensagem(resposta.mensagem, resposta.sucesso ? "success" : "danger");
+        if(resposta.sucesso) {
+          formulario.reset();
+          document.getElementById('texto-arquivo-status').innerText = "📸 Toque para Tirar Foto ou Escolher PDF";
+          configurarDataHoje();
+        }
+      })
+      .catch(erro => mostrarMensagem("Falha crítica no upload: " + erro, "danger"))
+      .finally(() => {
+        botao.disabled = false;
+        botao.innerHTML = "Enviar Lista Oficial";
+      });
+    };
+    leitor.readAsDataURL(arquivo);
+  }
+</script>
+</body>
+</html>
