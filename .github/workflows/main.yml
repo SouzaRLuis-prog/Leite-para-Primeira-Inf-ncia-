@@ -5,7 +5,6 @@ on:
     branches:
       - main
 
-# Dá permissões explícitas para o script poder alterar e criar branches
 permissions:
   contents: write
   pages: write
@@ -18,7 +17,6 @@ jobs:
       - name: Baixar o código do repositório
         uses: actions/checkout@v4
 
-      # Injeta a URL usando uma estratégia nativa do bash via Node
       - name: Injetar URL Secreta no index.html
         env:
           MINHA_API_URL: ${{ secrets.URL_MINHA_API }}
@@ -27,13 +25,13 @@ jobs:
             const fs = require('fs');
             const path = 'index.html';
             if (!fs.existsSync(path)) {
-              console.error('ERRO CRÍTICO: O arquivo index.html não foi encontrado na raiz!');
+              console.error('ERRO: index.html não encontrado!');
               process.exit(1);
             }
             let content = fs.readFileSync(path, 'utf8');
             content = content.split('REPLACE_WITH_API_URL').join(process.env.MINHA_API_URL);
             fs.writeFileSync(path, content, 'utf8');
-            console.log('Substituição realizada com sucesso!');
+            console.log('URL injetada com sucesso!');
           "
 
       - name: Enviar para o GitHub Pages
