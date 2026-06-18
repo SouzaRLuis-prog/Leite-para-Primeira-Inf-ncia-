@@ -3,7 +3,7 @@ name: Deploy Seguro para GitHub Pages
 on:
   push:
     branches:
-      - main # Roda sempre que você salvar algo na branch principal
+      - main
 
 jobs:
   build-and-deploy:
@@ -12,12 +12,15 @@ jobs:
       - name: Baixar o código do repositório
         uses: actions/checkout@v4
 
+      # Correção: Passamos a secret para uma variável de ambiente (env) para o sed não bugar
       - name: Injetar URL Secreta no index.html
+        env:
+          MINHA_API_URL: ${{ secrets.URL_MINHA_API }}
         run: |
-          sed -i 's|REPLACE_WITH_API_URL|${{ secrets.URL_MINHA_API }}|g' index.html
+          sed -i "s|REPLACE_WITH_API_URL|$MINHA_API_URL|g" index.html
 
       - name: Enviar para o GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: . # Sobe a pasta atual modificada com a URL certa
-          branch: gh-pages # Cria uma ramificação separada só com o site final
+          folder: .
+          branch: gh-pages
