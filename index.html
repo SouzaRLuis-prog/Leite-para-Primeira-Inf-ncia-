@@ -44,7 +44,7 @@
 
     <main class="w-full h-full grid grid-cols-1 lg:grid-cols-12 overflow-hidden opacity-0 transition-opacity duration-500" id="conteudo-principal">
         
-        <section class="lg:col-span-7 flex flex-col h-full overflow-y-auto">
+        <section id="secao-formulario" class="lg:col-span-7 flex flex-col h-full overflow-y-auto">
             
             <header class="sticky top-0 z-50 border-b border-gray-200/60 dark:border-gray-800/60 py-4 px-6 flex justify-between items-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
                 <div>
@@ -172,28 +172,18 @@
             </div>
         </section>
 
-        <section class="order-first lg:order-last lg:col-span-5 relative h-48 lg:h-full w-full bg-blue-900 overflow-hidden flex items-center justify-center">
-            <img src="https://placehold.co/600x1200" 
-                 alt="Layout" 
-                 class="absolute inset-0 w-full h-full object-cover opacity-60 lg:opacity-50">
-            
-            <div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-blue-950 via-blue-950/40 to-transparent"></div>
-            
-            <div class="relative z-10 hidden lg:block text-white p-12 max-w-md">
-                <span class="px-3 py-1 bg-blue-500/30 text-blue-300 text-[10px] font-bold uppercase tracking-widest rounded-full backdrop-blur-sm">
-                    Tipo Projeto
-                </span>
-                <h2 class="text-3xl font-black tracking-tight mt-4 mb-2">Nome Projeto</h2>
-                <p class="text-sm text-blue-200/90 leading-relaxed">
-                    Slogan
-                </p>
-            </div>
-
-            <div class="relative z-10 lg:hidden text-center text-white">
-                <h2 class="text-xl font-black uppercase tracking-wider">Nome Projeto</h2>
-                <p class="text-[10px] text-blue-200 uppercase tracking-widest">Cidade</p>
-            </div>
-        </section>
+   <section id="secao-imagem" class="order-first lg:order-last lg:col-span-5 relative h-48 lg:h-full w-full bg-blue-900 overflow-hidden flex items-center justify-center">
+    <img src="https://placehold.co/600x1200" 
+         alt="Layout" 
+         class="absolute inset-0 w-full h-full object-cover opacity-60 lg:opacity-50">
+    
+    <div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-blue-950 via-blue-950/40 to-transparent"></div>
+    
+    <div class="relative z-10 lg:hidden text-center text-white" id="texto-imagem-mobile">
+        <h2 class="text-xl font-black uppercase tracking-wider">Nome Projeto</h2>
+        <p class="text-[10px] text-blue-200 uppercase tracking-widest">Cidade</p>
+    </div>
+</section>
 
     </main>
 
@@ -368,7 +358,38 @@
       });
     };
     leitor.readAsDataURL(arquivo);
+
+    
   }
+document.addEventListener("DOMContentLoaded", () => {
+    const secaoFormulario = document.getElementById("secao-formulario");
+    const secaoImagem = document.getElementById("secao-imagem");
+
+    if (secaoFormulario && secaoImagem) {
+        secaoFormulario.addEventListener("scroll", () => {
+            if (window.innerWidth < 1024) {
+                // Se o usuário rolou mais de 30px
+                if (secaoFormulario.scrollTop > 30) {
+                    // Faz a imagem sumir apenas na opacidade e joga ela para trás
+                    secaoImagem.style.opacity = "0";
+                    secaoImagem.style.transform = "translateY(-50px)";
+                    secaoImagem.style.transition = "all 0.4s ease";
+                    
+                    // Sobe o formulário ligeiramente para ocupar o espaço de forma suave
+                    secaoFormulario.style.transform = "translateY(-140px)";
+                    secaoFormulario.style.transition = "transform 0.4s ease";
+                } 
+                // Se voltou totalmente para o topo do formulário
+                else if (secaoFormulario.scrollTop === 0) {
+                    secaoImagem.style.opacity = "1";
+                    secaoImagem.style.transform = "translateY(0)";
+                    
+                    secaoFormulario.style.transform = "translateY(0)";
+                }
+            }
+        });
+    }
+});
 </script>
 </body>
 </html>
