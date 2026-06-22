@@ -172,23 +172,22 @@
             </div>
         </section>
 
-   <section id="secao-imagem" class="order-first lg:order-last lg:col-span-5 relative h-48 lg:h-full w-full bg-blue-900 overflow-hidden flex items-center justify-center">
-    <img src="https://placehold.co/600x1200" 
-         alt="Layout" 
-         class="absolute inset-0 w-full h-full object-cover opacity-60 lg:opacity-50">
-    
-    <div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-blue-950 via-blue-950/40 to-transparent"></div>
-    
-    <div class="relative z-10 lg:hidden text-center text-white" id="texto-imagem-mobile">
-        <h2 class="text-xl font-black uppercase tracking-wider">Nome Projeto</h2>
-        <p class="text-[10px] text-blue-200 uppercase tracking-widest">Cidade</p>
-    </div>
-</section>
+        <section id="secao-imagem" class="order-first lg:order-last lg:col-span-5 relative h-20 lg:h-full w-full bg-blue-900 overflow-hidden flex items-center justify-center">
+            <img src="https://placehold.co/600x1200" 
+                 alt="Layout" 
+                 class="absolute inset-0 w-full h-full object-cover opacity-60 lg:opacity-50">
+            
+            <div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-blue-950 via-blue-950/40 to-transparent"></div>
+            
+            <div class="relative z-10 lg:hidden text-center text-white" id="texto-imagem-mobile">
+                <h2 class="text-base font-black uppercase tracking-wider">Nome Projeto</h2>
+                <p class="text-[9px] text-blue-200 uppercase tracking-widest">Cidade</p>
+            </div>
+        </section>
 
     </main>
 
 <script>
-  // O GitHub Actions substituirá esse marcador de texto pela sua URL secreta guardada no repositório.
   const URL_API = "https://script.google.com/macros/s/AKfycbwKYvI4hAw3jU9FJIJjWYlZouWBWhtppuMXd5qTb9ncq9Lhj8Pu1n66LZPfJyBGrsNw/exec";
 
   // Lógica do temporizador da Splash Screen
@@ -204,10 +203,9 @@
           
           // Remove a div da árvore após a animação de fade acabar
           setTimeout(() => splash.remove(), 600);
-      }, 2500); // 2.5 segundos de exibição da Splash Screen
+      }, 2500);
   });
 
-  // Alternador de telas adaptado para o novo layout sem cards soltos
   function alternarTelaLayout() {
     const formReg = document.getElementById('form-registro');
     const formUp = document.getElementById('form-upload');
@@ -246,7 +244,7 @@
     const campoData = document.getElementById(idCampo);
     campoData.readOnly = !checkbox.checked;
     if (!checkbox.checked) {
-      configurarDataHoje();
+        configurarDataHoje();
     }
   }
 
@@ -358,38 +356,7 @@
       });
     };
     leitor.readAsDataURL(arquivo);
-
-    
   }
-document.addEventListener("DOMContentLoaded", () => {
-    const secaoFormulario = document.getElementById("secao-formulario");
-    const secaoImagem = document.getElementById("secao-imagem");
-
-    if (secaoFormulario && secaoImagem) {
-        secaoFormulario.addEventListener("scroll", () => {
-            if (window.innerWidth < 1024) {
-                // Se o usuário rolou mais de 30px
-                if (secaoFormulario.scrollTop > 30) {
-                    // Faz a imagem sumir apenas na opacidade e joga ela para trás
-                    secaoImagem.style.opacity = "0";
-                    secaoImagem.style.transform = "translateY(-50px)";
-                    secaoImagem.style.transition = "all 0.4s ease";
-                    
-                    // Sobe o formulário ligeiramente para ocupar o espaço de forma suave
-                    secaoFormulario.style.transform = "translateY(-140px)";
-                    secaoFormulario.style.transition = "transform 0.4s ease";
-                } 
-                // Se voltou totalmente para o topo do formulário
-                else if (secaoFormulario.scrollTop === 0) {
-                    secaoImagem.style.opacity = "1";
-                    secaoImagem.style.transform = "translateY(0)";
-                    
-                    secaoFormulario.style.transform = "translateY(0)";
-                }
-            }
-        });
-    }
-});
 </script>
 </body>
 </html>
